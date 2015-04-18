@@ -26,39 +26,37 @@ class ViewController: UIViewController {
             if let unwrappedError = error {
                 println(unwrappedError.localizedFailureReason)
             } else if let unwrappedData = data {
-                let quaternion = self.absoluteQuaternion(unwrappedData.attitude.quaternion)
                 dispatch_async(dispatch_get_main_queue()) {
-                    self.colorView.backgroundColor = self.colorFromQuaternion(quaternion)
-                    self.colorLabel.text = self.stringFromQuaternion(quaternion)
+                    let color = self.colorFromAttitude(unwrappedData.attitude)
+                    self.colorView.backgroundColor = color
+                    self.colorLabel.text = self.stringFromColor(color)
                 }
             }
         }
     }
     
-    func absoluteQuaternion(quaternion: CMQuaternion) -> CMQuaternion {
-        return CMQuaternion(x: fabs(quaternion.x),
-                            y: fabs(quaternion.y),
-                            z: fabs(quaternion.z),
-                            w: fabs(quaternion.w))
+    func wrappedNumber(n: Double) -> CGFloat {
+        return CGFloat(sin(fabs(n) / 2))
     }
     
-    func colorFromQuaternion(quaternion: CMQuaternion) -> UIColor {
-        return UIColor(hue: CGFloat(quaternion.x),
-                       saturation: CGFloat(quaternion.y),
-                       brightness: CGFloat(quaternion.z),
-                       alpha: CGFloat(quaternion.w))
+    func colorFromAttitude(attitude: CMAttitude) -> UIColor {
+        return UIColor(hue: wrappedNumber(attitude.yaw),
+                       saturation: wrappedNumber(attitude.roll),
+                       brightness: 1.0 - wrappedNumber(attitude.pitch),
+                       alpha: 1.0)
     }
     
-    func stringFromQuaternion(quaternion: CMQuaternion) -> String? {
+    func stringFromColor(color: UIColor) -> String? {
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0
+        color.getHue(&h, saturation: &s, brightness: &b, alpha: nil)
+        
         if let
-            h = self.numberFormatter.stringFromNumber(quaternion.x),
-            s = self.numberFormatter.stringFromNumber(quaternion.y),
-            b = self.numberFormatter.stringFromNumber(quaternion.z),
-            a = self.numberFormatter.stringFromNumber(quaternion.w) {
-            return "Hue: \(h) Saturation: \(s)\nBrightness: \(b) Alpha: \(a)"
+            h = self.numberFormatter.stringFromNumber(h),
+            s = self.numberFormatter.stringFromNumber(s),
+            b = self.numberFormatter.stringFromNumber(b) {
+                return "Hue: \(h) Saturation: \(s)\nBrightness: \(b)"
         }
         return nil
     }
-
 }
 
