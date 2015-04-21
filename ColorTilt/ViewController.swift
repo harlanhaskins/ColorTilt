@@ -11,8 +11,8 @@ import CoreMotion
 
 class ViewController: UIViewController {
     
-    @IBOutlet weak var colorLabel: UILabel!
     @IBOutlet weak var colorView: UIView!
+    @IBOutlet weak var colorLabel: UILabel!
     let motionManager = CMMotionManager()
     let numberFormatter = NSNumberFormatter()
     
@@ -57,6 +57,10 @@ class ViewController: UIViewController {
                 return "Hue: \(h) Saturation: \(s)\nBrightness: \(b)"
         }
         return nil
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
     }
 }
 
