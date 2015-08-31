@@ -21,10 +21,18 @@ class ViewController: UIViewController {
         self.numberFormatter.maximumFractionDigits = 3
         self.numberFormatter.minimumFractionDigits = 3
         
+        let fontDescriptor = self.colorLabel.font.fontDescriptor().fontDescriptorByAddingAttributes([
+            UIFontDescriptorFeatureSettingsAttribute: [[
+                UIFontFeatureTypeIdentifierKey: kNumberSpacingType,
+                UIFontFeatureSelectorIdentifierKey: kMonospacedNumbersSelector
+                ]]
+            ])
+        self.colorLabel.font = UIFont(descriptor: fontDescriptor, size: fontDescriptor.pointSize)
+        
         self.motionManager.startDeviceMotionUpdatesToQueue(NSOperationQueue()) {
             (data: CMDeviceMotion?, error: NSError?) -> Void in
             if let unwrappedError = error {
-                println(unwrappedError.localizedFailureReason)
+                print(unwrappedError.localizedFailureReason)
             } else if let unwrappedData = data {
                 dispatch_async(dispatch_get_main_queue()) {
                     let color = self.colorFromAttitude(unwrappedData.attitude)
